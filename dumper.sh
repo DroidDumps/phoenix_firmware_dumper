@@ -537,14 +537,13 @@ elif 7z l -ba "${FILEPATH}" | grep ".*.rar\|.*.zip\|.*.7z\|.*.tar$" || [[ $(find
 	if [[ -f "${FILEPATH}" ]]; then
 		mkdir -p "${TMPDIR}"/"${UNZIP_DIR}" 2>/dev/null
 		7z e -y "${FILEPATH}" -o"${TMPDIR}"/"${UNZIP_DIR}"  >> "${TMPDIR}"/zip.log
-		for f in "${TMPDIR}"/"${UNZIP_DIR}"/*; do detox -r "${UNZIP_DIR}"/"${f}" 2>/dev/null; done
+		for f in "${TMPDIR}"/"${UNZIP_DIR}"/*; do detox -r "${f}" 2>/dev/null; done
 	fi
 	zip_list=$(find ./"${UNZIP_DIR}" -type f -size +300M \( -name "*.rar" -o -name "*.zip" -o -name "*.7z" -o -name "*.tar" \) | cut -d'/' -f'2-' | sort)
 	mkdir -p "${INPUTDIR}" 2>/dev/null
 	rm -rf "${INPUTDIR:?}"/* 2>/dev/null
 	for file in ${zip_list}; do
-		mv "${TMPDIR}"/"${UNZIP_DIR}"/"${file}" "${INPUTDIR}"/
-exit
+		mv "${TMPDIR}"/"${file}" "${INPUTDIR}"/
 		rm -rf "${TMPDIR:?}"/*
 		cd "${PROJECT_DIR}"/ || exit
 		( bash "${0}" "${INPUTDIR}"/"${file}" ) || exit 1
