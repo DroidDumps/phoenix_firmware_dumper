@@ -556,15 +556,15 @@ elif 7z l -ba "${FILEPATH}" | grep tar.md5 | gawk '{print $NF}' | grep -q AP_ 2>
 		rm -fv "${i}" || exit 1
 		printf "Extracted %s\n" "${i}"
 	done
+	for samsung_ext4_img_files in $(find -maxdepth 1 -type f -name \*.ext4 -printf '%P\n'); do
+		mv -v $samsung_ext4_img_files "${samsung_ext4_img_files%%.ext4}"
+	done
 	if [[ -f super.img ]]; then
 		printf "Creating super.img.raw ...\n"
 		"${SIMG2IMG}" super.img super.img.raw 2>/dev/null
 		[[ ! -s super.img.raw && -f super.img ]] && mv super.img super.img.raw
 	fi
 	superimage_extract || exit 1
-	for samsung_ext4_img_files in $(find -maxdepth 1 -type f -name \*.ext4 -printf '%P\n'); do
-		mv -v $samsung_ext4_img_files "${samsung_ext4_img_files%%.ext4}"
-	done
 	if [[ ! -f system.img ]]; then
 		printf "Extract failed\n"
 		rm -rf "${TMPDIR}" && exit 1
