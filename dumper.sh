@@ -152,7 +152,13 @@ else
 		if echo "${URL}" | grep -q "mega.nz\|mediafire.com\|drive.google.com"; then
 			( "${MEGAMEDIADRIVE_DL}" "${URL}" ) || exit 1
 		elif echo "${URL}" | grep -q "androidfilehost.com"; then
-			( python3 "${AFHDL}" -l "${URL}" ) || exit 1
+			if echo "${URL}" | grep -q ".androidfilehost.com"; then
+				aria2c -x16 -s8 --console-log-level=warn --summary-interval=0 --check-certificate=false "${URL}" || {
+					wget -q --show-progress --progress=bar:force --no-check-certificate "${URL}" || exit 1
+				}
+			else
+				( python3 "${AFHDL}" -l "${URL}" ) || exit 1
+			fi
 		else
 			if echo "${URL}" | grep -q "1drv.ms"; then URL=${URL/ms/ws}; fi
 			aria2c -x16 -s8 --console-log-level=warn --summary-interval=0 --check-certificate=false "${URL}" || {
